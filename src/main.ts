@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import docModels from './common/dtos';
 
 import { AppModule } from './resources/app/app.module';
 
@@ -20,7 +21,7 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, options, {
         ignoreGlobalPrefix: true,
-        // extraModels: docModels,
+        extraModels: docModels,
     });
 
     app.setGlobalPrefix('/task-ms/');

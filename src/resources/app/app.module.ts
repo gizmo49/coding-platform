@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../user/user.module';
-import { AuthorizationModule } from '../authorization/authorization.module';
-import { SharedModule } from '../shared/shared.module';
 import { typeOrmConfigAsync } from '../../config/database/typeorm.config';
+import { JwtGuard } from '../auth/jwt.guard';
+import { TaskModule } from '../task/task.module';
 
 @Module({
   imports: [
@@ -17,12 +18,15 @@ import { typeOrmConfigAsync } from '../../config/database/typeorm.config';
     }),
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     AuthModule,
-    AuthorizationModule,
     UsersModule,
-    SharedModule
+    TaskModule
 
   ],
   controllers: [],
-  providers: [],
+  providers: [ {
+    provide: APP_GUARD,
+    useClass: JwtGuard,
+  }
+],
 })
 export class AppModule { }

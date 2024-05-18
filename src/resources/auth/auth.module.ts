@@ -2,12 +2,10 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './service/auth.service';
 import { JwtStrategy } from './jwt-strategy';
 import { UsersModule } from '../user/user.module';
-import { RedisCacheModule } from '../shared/redis-cache/cache.module';
 
 @Global()
 @Module({
@@ -29,10 +27,12 @@ import { RedisCacheModule } from '../shared/redis-cache/cache.module';
       inject: [ConfigService],
     }),
     UsersModule,
-    RedisCacheModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    AuthService, 
+    JwtStrategy
+  ],
   exports: [JwtStrategy, PassportModule],
 })
-export class AuthModule {}
+export class AuthModule { }

@@ -12,7 +12,6 @@ import { User } from '../entity/user.entity';
 import { UserRepository } from '../repository/user.repository';
 import { Request } from 'express';
 import { SignupCredentialsDto } from 'src/resources/auth/dto/signup-credentials.dto';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
