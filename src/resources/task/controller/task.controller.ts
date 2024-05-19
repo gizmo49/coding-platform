@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { TaskService } from '../service/task.service';
 import { ApiDefaultResponse } from 'src/common/decorators/api-default';
 import { UserDecorator } from 'src/resources/auth/decorator/user.decorator';
-import { UserDto } from 'src/resources/user/dto/user.dto';
 import { ApiMappedResponse } from 'src/common/decorators/api-mapped';
 import { ResponseDto } from 'src/common/dtos/response.dto';
 import { ApiMessageResponse } from 'src/common/decorators/api-message';
@@ -11,9 +10,12 @@ import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskDto } from '../dto/task.dto';
 import { Task } from '../entity/task.entity';
 import { ApiProtectedHeaders } from 'src/common/decorators/api-headers';
+import { User } from 'src/resources/user/entity/user.entity';
+import { JwtGuard } from 'src/resources/auth/jwt.guard';
 
 @ApiProtectedHeaders('Task')
 @Controller('api/v1')
+@UseGuards(JwtGuard)
 export class TaskController {
     constructor(private readonly taskService: TaskService) { }
 
@@ -23,10 +25,10 @@ export class TaskController {
     })
     @Post('/task')
     async createTask(
-        @UserDecorator() userDto: UserDto,
+        @UserDecorator() user: User,
         @Body() createTaskDto: CreateTaskDto
     ): Promise<ResponseDto<Task>> {
-        const data = await this.taskService.createTask(createTaskDto, userDto);
+        const data = await this.taskService.createTask(createTaskDto, user);
         return { message: "Tasks fetched successfully", data }
     }
 
@@ -37,9 +39,9 @@ export class TaskController {
     })
     @Get('/tasks')
     async findAllTasks(
-        @UserDecorator() userDto: UserDto,
+        @UserDecorator() user: User,
     ): Promise<ResponseDto<Task[]>> {
-        const data = await this.taskService.findAllTasks(userDto);
+        const data = await this.taskService.findUserTasks(user);
         return { message: "Tasks fetched successfully", data }
     }
 
@@ -50,9 +52,9 @@ export class TaskController {
     @Get('/task/:taskId')
     async findSpecificTask(
         @Param('taskId') taskId: string,
-        @UserDecorator() userDto: UserDto,
+        @UserDecorator() user: User,
     ): Promise<ResponseDto<Task>> {
-        const data = await this.taskService.findSpecificTask(taskId, userDto.userId);
+        const data = await this.taskService.findUserTask(taskId, user);
         return { message: "Task fetched successfully", data }
     }
 
@@ -64,9 +66,9 @@ export class TaskController {
     async updateTask(
         @Param('taskId') taskId: string,
         @Body() updateTaskDto: UpdateTaskDto,
-        @UserDecorator() userDto: UserDto,
+        @UserDecorator() user: User,
     ): Promise<ResponseDto<Task>> {
-        const data = await this.taskService.updateTask(taskId, updateTaskDto, userDto);
+        const data = await this.taskService.updateTask(taskId, updateTaskDto, user);
         return { message: "Task updated successfully", data }
     }
 
@@ -76,9 +78,9 @@ export class TaskController {
     @Delete('/task/:taskId')
     async removeTask(
         @Param('taskId') taskId: string,
-        @UserDecorator() userDto: UserDto,
+        @UserDecorator() user: User,
     ) {
-        await this.taskService.removeTask(taskId, userDto?.userId);
+        await this.taskService.removeTask(taskId, user);
         return { message: "Task Deleted successfully", data: "" }
     }
 

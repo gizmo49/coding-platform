@@ -35,24 +35,23 @@ export class AuthService {
             JSON.parse(JSON.stringify(userPayload)),
         );
 
-        const refreshToken = this.jwtService.sign(
-            JSON.parse(JSON.stringify(userPayload)),
-            {
-                secret: process.env.JWT_REFRESH_SECRET,
-                expiresIn: process.env.JWT_TOKEN_REFRESH_EXPIRES,
-                algorithm: 'HS256',
-            },
-        );
 
         const payload: JwtPayloadDto = {
             user,
             token: {
                 accessToken,
-                refreshToken,
                 expiresIn: this.configService.get('JWT_TOKEN_EXPIRES'),
             },
         };
         return payload;
+    }
+
+    public async validateToken(authToken: any): Promise<User>{
+        const decoded = await this.jwtService.verify(authToken, {
+            secret: process.env.JWT_SECRET
+        },) as any;
+        const user = await this.userService.getUserProfile(decoded.userId)
+        return user
     }
 
     async signUp(signupCredentialsDto: SignupCredentialsDto): Promise<User> {

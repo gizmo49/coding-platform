@@ -3,7 +3,6 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import docModels from './common/dtos';
-
 import { AppModule } from './resources/app/app.module';
 
 async function bootstrap() {
@@ -19,15 +18,18 @@ async function bootstrap() {
         .addTag('TMS')
         .build();
 
-    const document = SwaggerModule.createDocument(app, options, {
-        ignoreGlobalPrefix: true,
-        extraModels: docModels,
-    });
 
     app.setGlobalPrefix('/task-ms/');
     app.enableCors();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+   
+
+    const document = SwaggerModule.createDocument(app, options, {
+        ignoreGlobalPrefix: false,
+        extraModels: docModels,
+    });
+
     SwaggerModule.setup('/task-ms/swagger', app, document);
 
     await app.listen(port);

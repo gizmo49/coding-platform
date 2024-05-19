@@ -30,17 +30,13 @@ export class UserService {
         );
         return user
     }
-  
+
 
     async validateUserLogin({
         email,
         password,
     }: SignInCredentialsDto): Promise<User> {
-        const user: User = await this.userRepository.findOne({
-            where: {
-                email
-            }
-        });
+        const user: User = await this.userRepository.findByEmail(email);
 
         if (!user) {
             throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -59,9 +55,7 @@ export class UserService {
     }
 
     async getUserProfile(userId: string) {
-        const user = await this.userRepository.findOneOrFail({
-            where: {userId}
-        })
+        const user = await this.userRepository.findByUserId(userId)
         return user
     }
 

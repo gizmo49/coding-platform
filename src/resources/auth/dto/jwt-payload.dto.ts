@@ -5,8 +5,6 @@ class TokenDTO {
   @ApiProperty()
   accessToken: string;
   @ApiProperty()
-  refreshToken: string;
-  @ApiProperty()
   expiresIn: string;
 }
 

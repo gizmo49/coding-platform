@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './entity/task.entity';
 import { UsersModule } from '../user/user.module';
 import { TaskRepository } from './repository/task.repository';
+import { WebsocketsGateway } from '../socket/websockets.gateway';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { TaskRepository } from './repository/task.repository';
     UsersModule,
   ],
   controllers: [TaskController],
-  providers: [TaskService, TaskRepository],
+  providers: [WebsocketsGateway, TaskService, TaskRepository],
 })
 export class TaskModule { }

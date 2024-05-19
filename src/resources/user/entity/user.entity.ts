@@ -33,11 +33,11 @@ export class User extends BaseEntity {
     @Column({ type: 'varchar', nullable: false, unique: true })
     email: string;
 
-    @Exclude()
+    @Exclude({ toPlainOnly: true })
     @Column({ type: 'varchar' })
     salt: string;
 
-    @Exclude()
+    @Exclude({ toPlainOnly: true })
     @Column({ type: 'varchar' })
     password: string;
 

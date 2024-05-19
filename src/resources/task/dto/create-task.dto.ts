@@ -3,7 +3,6 @@ import {
     IsNotEmpty,
     IsString,
     IsOptional,
-    IsDate,
 } from 'class-validator';
 
 export class CreateTaskDto {
@@ -19,7 +18,6 @@ export class CreateTaskDto {
     description: string;
 
     @ApiProperty()
-    @IsDate()
     @IsOptional()
     dueDate: Date
 

@@ -12,9 +12,7 @@ import { SignupCredentialsDto } from './dto/signup-credentials.dto';
 import { AuthService } from './service/auth.service';
 import { LoginSuperResponseDto } from './dto/login-super-response.dto';
 import { ApiDefaultResponse } from 'src/common/decorators/api-default';
-import { Public } from './public-strategy';
 
-@Public()
 @Controller('api/v1/auth')
 export class AuthController {
     constructor(private authService: AuthService) { }

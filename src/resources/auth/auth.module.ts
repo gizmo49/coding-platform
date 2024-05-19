@@ -6,6 +6,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './service/auth.service';
 import { JwtStrategy } from './jwt-strategy';
 import { UsersModule } from '../user/user.module';
+import { WSAuthService } from './service/ws-auth.service';
+
 
 @Global()
 @Module({
@@ -19,7 +21,7 @@ import { UsersModule } from '../user/user.module';
           publicKey: configService.get('JWT_PUBLIC'),
           signOptions: {
             expiresIn: configService.get<string | number>('JWT_TOKEN_EXPIRES'),
-            algorithm: 'RS256',
+            // algorithm: 'RS256',
           },
         };
         return options;
@@ -31,8 +33,9 @@ import { UsersModule } from '../user/user.module';
   controllers: [AuthController],
   providers: [
     AuthService, 
+    WSAuthService,
     JwtStrategy
   ],
-  exports: [JwtStrategy, PassportModule],
+  exports: [JwtStrategy, PassportModule, AuthService, WSAuthService],
 })
 export class AuthModule { }
