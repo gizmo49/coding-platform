@@ -26,6 +26,7 @@ export class AuthService {
     private async generateAuthToken(user: User): Promise<JwtPayloadDto> {
         const userPayload: UserDto = {
             userId: user.userId,
+            userType: user.userType,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -54,9 +55,10 @@ export class AuthService {
         return user
     }
 
-    async signUp(signupCredentialsDto: SignupCredentialsDto): Promise<User> {
+    async signUp(signupCredentialsDto: SignupCredentialsDto, file): Promise<User> {
         const user: User = await this.userService.createUser(
             signupCredentialsDto,
+            file
         );
         return user
     }

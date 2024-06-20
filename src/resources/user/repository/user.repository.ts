@@ -1,44 +1,37 @@
-import { EntityManager, QueryRunner, Repository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { SignupCredentialsDto } from '../../auth/dto/signup-credentials.dto';
 import { generateRandomness } from '../../../common/utils/helper';
 import { User } from '../entity/user.entity';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { Injectable, Optional } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
-@Injectable()
+@EntityRepository(User)
 export class UserRepository extends Repository<User> {
    
-    constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>
-    ) {
-        super();
-    }
-
-
     private async hashPassword(password: string, salt: string): Promise<string> {
         return bcrypt.hash(password, salt);
     }
 
-
     async createUser(
         signupCredentialsDto: SignupCredentialsDto,
+        userImageUrl: string,
     ): Promise<User> {
-        const { firstName, lastName, email, password } = signupCredentialsDto;
+        const { userType, firstName, lastName, email, password } = signupCredentialsDto;
         const user = new User();
         user.userId = generateRandomness(20);
+        user.userType = userType;
+        user.userImage = userImageUrl;
         user.firstName = firstName;
         user.lastName = lastName;
         user.email = email;
         user.salt = await bcrypt.genSalt();
         user.password = await this.hashPassword(password, user.salt);
-        await this.userRepository.save(user)
+        await this.save(user)
         return user;
     }
 
     async findByEmail(email: string): Promise<User> {
-        return await this.userRepository.findOne({
+        return await this.findOne({
             where: {
                 email
             }
@@ -46,7 +39,7 @@ export class UserRepository extends Repository<User> {
     }
 
     async findByUserId(userId: string): Promise<User>{
-       return await this.userRepository.findOneOrFail({
+       return await this.findOneOrFail({
             where: {userId}
         })
     }

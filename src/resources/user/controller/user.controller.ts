@@ -11,7 +11,7 @@ import { UserService } from '../service/user.service';
 import { ApiProtectedHeaders } from '../../../common/decorators/api-headers';
 import { UserDecorator } from 'src/resources/auth/decorator/user.decorator';
 import { User } from '../entity/user.entity';
-import { JwtGuard } from 'src/resources/auth/jwt.guard';
+import { JwtGuard } from 'src/resources/auth/guards/jwt.guard';
 
 @Controller('api/v1/user')
 @ApiProtectedHeaders('User')

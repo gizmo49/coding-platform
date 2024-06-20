@@ -5,8 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../user/user.module';
 import { typeOrmConfigAsync } from '../../config/database/typeorm.config';
-import { TaskModule } from '../task/task.module';
-import { SocketModule } from '../socket/socket.module';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { CodingProblemModule } from '../coding-problem/coding-problem.module';
+import { CodingSolutionModule } from '../coding-solution/coding-solution.module';
+
 
 @Module({
   imports: [
@@ -19,10 +21,15 @@ import { SocketModule } from '../socket/socket.module';
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     AuthModule,
     UsersModule,
-    TaskModule,
-    SocketModule
+    CodingProblemModule,
+    CodingSolutionModule
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule { }

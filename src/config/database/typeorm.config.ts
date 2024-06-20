@@ -26,7 +26,7 @@ export default class TypeOrmConfig {
     };
 
     return {
-      type: 'postgres',
+      type: 'mysql',
       host: this.configService.get('DATABASE_HOST'),
       port: this.configService.get<number>('DATABASE_PORT'),
       username: this.configService.get('DATABASE_USERNAME'),

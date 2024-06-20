@@ -6,10 +6,19 @@ import {
     MaxLength,
     Matches,
     IsEmail,
+    IsEnum,
 } from 'class-validator';
+import { UserType } from 'src/resources/user/enums';
 
 export class SignupCredentialsDto {
 
+    @ApiProperty({
+        description: 'The image file to be uploaded',
+        type: 'string',
+        format: 'binary',
+    })
+    profilePic: any;
+      
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
@@ -28,6 +37,12 @@ export class SignupCredentialsDto {
     @IsString()
     @IsEmail()
     email: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsEnum(UserType)
+    @IsEmail()
+    userType: UserType;
 
     @ApiProperty({
         minimum: 6,

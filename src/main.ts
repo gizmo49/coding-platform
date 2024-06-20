@@ -12,14 +12,14 @@ async function bootstrap() {
 
     const options = new DocumentBuilder()
         .addBearerAuth()
-        .setTitle('Task Management System')
-        .setDescription('Task Management System API documentation')
+        .setTitle('Coding Platform')
+        .setDescription('Coding Platform API documentation')
         .setVersion('1.0')
-        .addTag('TMS')
+        .addTag('Coding Platform')
         .build();
 
 
-    app.setGlobalPrefix('/task-ms/');
+    app.setGlobalPrefix('/coding-platform/');
     app.enableCors();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
@@ -30,7 +30,7 @@ async function bootstrap() {
         extraModels: docModels,
     });
 
-    SwaggerModule.setup('/task-ms/swagger', app, document);
+    SwaggerModule.setup('/coding-platform/swagger', app, document);
 
     await app.listen(port);
 }

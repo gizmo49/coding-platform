@@ -12,6 +12,7 @@ import { User } from '../entity/user.entity';
 import { UserRepository } from '../repository/user.repository';
 import { Request } from 'express';
 import { SignupCredentialsDto } from 'src/resources/auth/dto/signup-credentials.dto';
+import { FileUploadService } from 'src/resources/file-upload/file-upload.service';
 
 @Injectable()
 export class UserService {
@@ -21,12 +22,16 @@ export class UserService {
 
         @InjectRepository(UserRepository)
         private readonly userRepository: UserRepository,
+        private fileUploadService: FileUploadService,
+
 
     ) { }
 
-    async createUser(signupCredentialsDto: SignupCredentialsDto): Promise<User> {
+    async createUser(signupCredentialsDto: SignupCredentialsDto, file): Promise<User> {
+        const userImageUrl = await this.fileUploadService.uploadFile(file);
         const user: User = await this.userRepository.createUser(
             signupCredentialsDto,
+            userImageUrl
         );
         return user
     }

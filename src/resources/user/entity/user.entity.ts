@@ -8,7 +8,9 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
-import { Task } from 'src/resources/task/entity/task.entity';
+import { UserType } from '../enums';
+import { CodingProblem } from 'src/resources/coding-problem/entity/coding-problem.entity';
+import { CodingSolution } from 'src/resources/coding-solution/entity/coding-solution.entity';
 
 
 @Entity()
@@ -18,7 +20,13 @@ export class User extends BaseEntity {
     id: string;
 
     @Column({ type: 'varchar', nullable: false })
-    userId;
+    userId: string;
+
+    @Column({ type: 'enum', enum: UserType, default: UserType.DEFAULT })
+    userType: UserType;
+
+    @Column({ type: 'varchar', nullable: true })
+    userImage: string;
 
     @Column({ type: 'varchar', nullable: false })
     firstName: string;
@@ -41,10 +49,15 @@ export class User extends BaseEntity {
     @Column({ type: 'varchar' })
     password: string;
 
-    @OneToMany(() => Task, (task) => task.createdBy, {
+    @OneToMany(() => CodingProblem, (codingProblem) => codingProblem.createdBy, {
         onDelete: 'CASCADE',
     })
-    tasks: Task[];
+    codingProblems: CodingProblem[];
+
+    @OneToMany(() => CodingSolution, (codingProblem) => codingProblem.solvedBy, {
+        onDelete: 'CASCADE',
+    })
+    codingSolution: CodingSolution[];
 
     async validatePassword(password: string): Promise<boolean> {
         const hash = await bcrypt.hash(password, this.salt);
