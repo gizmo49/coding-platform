@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards } from '@nestjs/common';
 import { CodingProblemService } from '../service/coding-problem.service';
 import { CreateCodingProblemDto } from '../dto/create-coding-problem.dto';
-import { UpdateCodingProblemDto } from '../dto/update-coding-problem.dto';
 import { ApiProtectedHeaders } from 'src/common/decorators/api-headers';
 import { JwtGuard } from 'src/resources/auth/guards/jwt.guard';
 import { RolesGuard } from 'src/resources/auth/guards/roles.guard';
@@ -12,6 +11,10 @@ import { CodingProblemResponseDto } from '../dto/coding-problem-response.dto';
 import { CodingProblem } from '../entity/coding-problem.entity';
 import { ApiDefaultResponse } from 'src/common/decorators/api-default';
 import { ApiMappedResponse } from 'src/common/decorators/api-mapped';
+import { Roles } from 'src/resources/auth/decorator/roles.decorator';
+import { UserType } from 'src/resources/user/enums';
+
+const { ADMIN, DEFAULT } = UserType;
 
 @ApiProtectedHeaders('Coding Problem')
 @Controller('api/v1')
@@ -24,7 +27,8 @@ export class CodingProblemController {
         description: 'Returns list of coding problems',
     })
     @Get('/coding-problems')
-    async getCodingProblems(): Promise<ResponseDto<CodingProblem[]>>{
+    @Roles(ADMIN, DEFAULT)
+    async getCodingProblems(): Promise<ResponseDto<CodingProblem[]>> {
         const data = await this.codingProblemService.getCodingProblems();
         return {
             message: "",
@@ -37,6 +41,7 @@ export class CodingProblemController {
         description: 'Returns details of newly created Coding Challenge',
     })
     @Post('/coding-problem')
+    @Roles(ADMIN)
     async createCodingProblem(
         @UserDecorator() user: User,
         @Body() createCodingProblemDto: CreateCodingProblemDto
@@ -47,12 +52,13 @@ export class CodingProblemController {
             data
         }
     }
-    
+
     @ApiDefaultResponse({
         model: CodingProblemResponseDto,
         description: 'Returns details of a coding challenge',
     })
     @Get('/coding-problem/:codingProblemId')
+    @Roles(ADMIN, DEFAULT)
     async getCodingProblem(
         @Param('codingProblemId') codingProblemId: string,
         @UserDecorator() user: User,
@@ -69,21 +75,21 @@ export class CodingProblemController {
         description: 'Returns details of updated Coding Challenge',
     })
     @Patch('/coding-problem/:codingProblemId')
+    @Roles(ADMIN)
     async updateCodingProblem(
         @Param('codingProblemId') codingProblemId: string,
         @Body() updateCodingProblemDto: CreateCodingProblemDto,
         @UserDecorator() user: User
     ): Promise<ResponseDto<CodingProblem>> {
         const data = await this.codingProblemService.updateCodingProblem(
-                codingProblemId,
-                updateCodingProblemDto,
-                user
-            );
+            codingProblemId,
+            updateCodingProblemDto,
+            user
+        );
         return {
             message: "Coding Challenge Created Successfully",
             data
         }
     }
-    
 
 }

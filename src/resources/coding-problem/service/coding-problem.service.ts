@@ -18,7 +18,7 @@ export class CodingProblemService {
         private codingProblemExampleReposioty: CodingProblemExampleReposioty,
         
       ) {}
-
+   
 
     async getCodingProblems() {
         // TODO make Provision for pagination
@@ -94,19 +94,4 @@ export class CodingProblemService {
         });
     }
 
-    findAll() {
-        return `This action returns all codingProblem`;
-    }
-
-    findOne(id: number) {
-        return `This action returns a #${id} codingProblem`;
-    }
-
-    update(id: number, updateCodingProblemDto: UpdateCodingProblemDto) {
-        return `This action updates a #${id} codingProblem`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} codingProblem`;
-    }
 }
