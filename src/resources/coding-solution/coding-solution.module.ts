@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CodingSolutionService } from './service/coding-solution.service';
 import { CodingSolutionController } from './controller/coding-solution.controller';
 import { CodingProblemRepository } from '../coding-problem/repository/coding-problem.repository';
-import { CodingCompilerModule } from '../coding-compiler/coding-compiler.module';
 import { TestCaseResultRepository } from './repository/testcase-result.repository';
 import { CodingSolutionRepository } from './repository/coding-solution.repository';
+import { CodingProblemModule } from '../coding-problem/coding-problem.module';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { CodingSolutionRepository } from './repository/coding-solution.repositor
       CodingProblemRepository,
       TestCaseResultRepository
     ]),
-    CodingCompilerModule
+    CodingProblemModule
   ],
   controllers: [CodingSolutionController],
   providers: [CodingSolutionService],

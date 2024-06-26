@@ -23,7 +23,7 @@ export class AuthController {
 
     @Post('/sign-up')
     @ApiDefaultResponse({
-        model: UserDto,
+        model: LoginSuperResponseDto,
         description: 'Registration endpoint for user',
     })
     @UseInterceptors(
@@ -34,7 +34,7 @@ export class AuthController {
     async signUp(
         @UploadedFile() file,
         @Body() signupCredentialsDto: SignupCredentialsDto,
-    ): Promise<ResponseDto<User>> {
+    ): Promise<ResponseDto<JwtPayloadDto>> {
         const data = await this.authService.signUp(signupCredentialsDto, file);
         return { message: 'User Account created', data };
     }

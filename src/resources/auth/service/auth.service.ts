@@ -47,7 +47,7 @@ export class AuthService {
         return payload;
     }
 
-    public async validateToken(authToken: any): Promise<User>{
+    public async validateToken(authToken: any): Promise<User> {
         const decoded = await this.jwtService.verify(authToken, {
             secret: process.env.JWT_SECRET
         },) as any;
@@ -55,12 +55,12 @@ export class AuthService {
         return user
     }
 
-    async signUp(signupCredentialsDto: SignupCredentialsDto, file): Promise<User> {
+    async signUp(signupCredentialsDto: SignupCredentialsDto, file): Promise<JwtPayloadDto> {
         const user: User = await this.userService.createUser(
             signupCredentialsDto,
             file
         );
-        return user
+        return await this.generateAuthToken(user);
     }
 
     async signIn(

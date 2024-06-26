@@ -19,6 +19,8 @@ export class CodingProblemExample extends BaseEntity {
     @Column({ type: 'varchar', nullable: false })
     explanation: string;
 
-    @ManyToOne(() => CodingProblem, codingProblem => codingProblem.examples)
+    @ManyToOne(() => CodingProblem, codingProblem => codingProblem.examples, {
+        onDelete: 'CASCADE'
+    })
     codingProblem: CodingProblem;
 }

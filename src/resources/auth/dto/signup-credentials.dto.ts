@@ -41,7 +41,6 @@ export class SignupCredentialsDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsEnum(UserType)
-    @IsEmail()
     userType: UserType;
 
     @ApiProperty({

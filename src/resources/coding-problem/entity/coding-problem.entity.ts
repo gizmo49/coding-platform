@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, BaseEntit
 import { User } from 'src/resources/user/entity/user.entity';
 import { Exclude } from 'class-transformer';
 import { CodingSolution } from '../../coding-solution/entity/coding-solution.entity';
-import { CodingProblemTestCase } from './coding-problem-testcase.entity';
 import { CodingProblemExample } from './coding-problem-example.entity';
+import { CodingProblemTemplate } from './coding-problem-template.entity';
 
 @Entity()
 export class CodingProblem extends BaseEntity {
@@ -27,12 +27,20 @@ export class CodingProblem extends BaseEntity {
     @Column({ type: 'simple-array'})
     followUp?: string[];
 
-    @Column({ type: 'varchar', nullable: true })
+    @Column({ type: 'simple-array' })
     hints?: string[];
 
-    @OneToMany(() => CodingProblemExample, exmaple => exmaple.codingProblem)
+    @OneToMany(() => CodingProblemExample, exmaple => exmaple.codingProblem, {
+        onDelete: 'CASCADE'
+    })
     @JoinColumn()
     examples: CodingProblemExample[];
+
+    @OneToMany(() => CodingProblemTemplate, template => template.codingProblem, {
+        onDelete: 'CASCADE'
+    })
+    @JoinColumn()
+    templates: CodingProblemTemplate[];
 
     @ManyToOne(() => User, user => user.codingProblems)
     createdBy: User;
@@ -42,8 +50,4 @@ export class CodingProblem extends BaseEntity {
     })
     solutions: CodingSolution[];
 
-    @OneToMany(() => CodingProblemTestCase, testCase => testCase.problem, {
-        onDelete: 'CASCADE'
-    })
-    testCases: CodingProblemTestCase[];
 }

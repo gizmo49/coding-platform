@@ -13,12 +13,14 @@ import { ApiDefaultResponse } from 'src/common/decorators/api-default';
 import { ApiMappedResponse } from 'src/common/decorators/api-mapped';
 import { Roles } from 'src/resources/auth/decorator/roles.decorator';
 import { UserType } from 'src/resources/user/enums';
+import { CodingProblemTestCaseResultDto, RunCodingProblemTestDto } from '../dto/run-coding-problem-test.dto';
+import { TestCaseResult } from '../interface';
+import { OptionalJwtAuthGuard } from 'src/resources/auth/guards/optional-jwt.guard';
 
 const { ADMIN, DEFAULT } = UserType;
 
 @ApiProtectedHeaders('Coding Problem')
 @Controller('api/v1')
-@UseGuards(JwtGuard, RolesGuard)
 export class CodingProblemController {
     constructor(private readonly codingProblemService: CodingProblemService) { }
 
@@ -27,11 +29,25 @@ export class CodingProblemController {
         description: 'Returns list of coding problems',
     })
     @Get('/coding-problems')
-    @Roles(ADMIN, DEFAULT)
     async getCodingProblems(): Promise<ResponseDto<CodingProblem[]>> {
         const data = await this.codingProblemService.getCodingProblems();
         return {
             message: "",
+            data
+        }
+    }
+
+    @ApiMappedResponse({
+        model: CodingProblemTestCaseResultDto,
+        description: 'Returns list of coding problem test results based on code input',
+    })
+    @Post('/run/coding-problem')
+    async runCodingProblemTestCases(
+        @Body() runCodingProblemTestDto: RunCodingProblemTestDto
+    ): Promise<ResponseDto<TestCaseResult[]>> {
+        const data = await this.codingProblemService.runCodingProblemTestCases(runCodingProblemTestDto);
+        return {
+            message: "Coding Challenge Created Successfully",
             data
         }
     }
@@ -41,6 +57,7 @@ export class CodingProblemController {
         description: 'Returns details of newly created Coding Challenge',
     })
     @Post('/coding-problem')
+    @UseGuards(JwtGuard, RolesGuard)
     @Roles(ADMIN)
     async createCodingProblem(
         @UserDecorator() user: User,
@@ -53,16 +70,17 @@ export class CodingProblemController {
         }
     }
 
+
     @ApiDefaultResponse({
         model: CodingProblemResponseDto,
         description: 'Returns details of a coding challenge',
     })
     @Get('/coding-problem/:codingProblemId')
-    @Roles(ADMIN, DEFAULT)
+    @UseGuards(OptionalJwtAuthGuard)
     async getCodingProblem(
         @Param('codingProblemId') codingProblemId: string,
-        @UserDecorator() user: User,
-    ): Promise<ResponseDto<CodingProblem>> {
+        @UserDecorator() user: User
+    ){
         const data = await this.codingProblemService.getCodingProblem(codingProblemId, user);
         return {
             message: "Details of Coding Challenge",
@@ -75,6 +93,7 @@ export class CodingProblemController {
         description: 'Returns details of updated Coding Challenge',
     })
     @Patch('/coding-problem/:codingProblemId')
+    @UseGuards(JwtGuard, RolesGuard)
     @Roles(ADMIN)
     async updateCodingProblem(
         @Param('codingProblemId') codingProblemId: string,

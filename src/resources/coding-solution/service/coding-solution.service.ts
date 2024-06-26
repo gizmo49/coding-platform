@@ -4,10 +4,11 @@ import { User } from 'src/resources/user/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CodingProblemRepository } from 'src/resources/coding-problem/repository/coding-problem.repository';
 import { CodingSolutionRepository } from '../repository/coding-solution.repository';
-import { CodingCompilerService } from 'src/resources/coding-compiler/service/coding-compiler.service';
 import { TestCaseResultRepository } from '../repository/testcase-result.repository';
-import { TestCaseResult } from '../entity/testcase-result.entity';
+import { TestCaseResult as TestCaseResultEntity } from '../entity/testcase-result.entity';
 import { CodingSolution } from '../entity/coding-solution.entity';
+import { CodingProblemService } from 'src/resources/coding-problem/service/coding-problem.service';
+import { TestCaseResult } from 'src/resources/coding-problem/interface';
 
 @Injectable()
 export class CodingSolutionService {
@@ -22,23 +23,31 @@ export class CodingSolutionService {
         @InjectRepository(TestCaseResultRepository)
         private testCaseResultRepository: TestCaseResultRepository,
 
-        private readonly codingCompilerService: CodingCompilerService
+        private readonly codingProblemService: CodingProblemService
 
-    ){}
+    ) { }
 
     async createCodingSolutionAttempt(createCodingSolutionAttemptDto: CreateCodingSolutionAttemptDto, user: User) {
-        const { problemId } = createCodingSolutionAttemptDto
+        const { codingProblemId, code, language } = createCodingSolutionAttemptDto
         const problem = await this.codingProblemRepository.findOneOrFail({
-            where:{
-                codingProblemId: problemId
+            where: {
+                codingProblemId
             },
-            relations:['testCases']
+            relations: ['examples', 'templates'],
         });
+
+        const testCases: TestCaseResult[] = await this.codingProblemService.runTests(problem, code, language)
 
         const existingSolution = await this.codingSolutionRepository.findExistingCodingSolution(
             problem,
             user
         );
+
+        if (existingSolution) {
+            existingSolution.code = createCodingSolutionAttemptDto.code;
+            existingSolution.language = createCodingSolutionAttemptDto.language;
+            await this.codingSolutionRepository.save(existingSolution);
+        }
 
         const codingSolution: CodingSolution = existingSolution ? existingSolution : await this.codingSolutionRepository.createCodingSolution(
             createCodingSolutionAttemptDto,
@@ -58,37 +67,34 @@ export class CodingSolutionService {
             await this.testCaseResultRepository.remove(oldTestCaseResults)
         }
 
-        const testCaseResults: TestCaseResult[] = [];
         let allPassed = true;
-    
-        for (const testCase of problem.testCases) {
-          const executionResult = await this.codingCompilerService.executeCode({
-            language: createCodingSolutionAttemptDto.language,
-            code: `${createCodingSolutionAttemptDto.code}\nconsole.log(${testCase.input});`,
-          });
-    
-          const testCaseResult = new TestCaseResult();
-          testCaseResult.input = testCase.input;
-          testCaseResult.expectedOutput = testCase.expectedOutput;
-          testCaseResult.actualOutput = executionResult.output.trim();
-          testCaseResult.success = testCaseResult.actualOutput === testCaseResult.expectedOutput;
-          testCaseResult.codingSolution = codingSolution;
-    
-          if (!testCaseResult.success) {
-            allPassed = false;
-          }
-    
-          testCaseResults.push(testCaseResult);
+        const testCaseResults = [];
+        // here we assume examples are used for test case,
+        // although this is limited but a short term solution
+        for (const testCase of testCases) {
+            const testCaseResult = new TestCaseResultEntity();
+            testCaseResult.input = testCase.input;
+            testCaseResult.expectedOutput = testCase.expectedOutput;
+            testCaseResult.actualOutput = testCase.actualOutput;
+            testCaseResult.success = testCase.result === 'pass';
+            testCaseResult.codingSolution = codingSolution;
+            testCaseResults.push(testCaseResult);
+
+            if (!testCaseResult.success) {
+                allPassed = false;
+            }
+
         }
-    
+
         codingSolution.success = allPassed;
-        codingSolution.output = testCaseResults.map(result => result.actualOutput).join('\n');
-    
+        codingSolution.output = testCases.map(result => result.actualOutput).join('\n');
+
         await this.codingSolutionRepository.save(codingSolution);
         await this.testCaseResultRepository.save(testCaseResults);
 
+        return testCases
 
     }
 
-   
+
 }

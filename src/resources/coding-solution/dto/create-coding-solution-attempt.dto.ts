@@ -1,20 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { RunCodingProblemTestDto } from 'src/resources/coding-problem/dto/run-coding-problem-test.dto';
 
-export class CreateCodingSolutionAttemptDto {
+export class CreateCodingSolutionAttemptDto extends PartialType(RunCodingProblemTestDto) {
 
-    @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    problemId: string;
-
-    @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    language: string;
-
-    @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    code: string;
 }

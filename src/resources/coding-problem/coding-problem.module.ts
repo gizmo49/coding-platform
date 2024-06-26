@@ -3,18 +3,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CodingProblemService } from './service/coding-problem.service';
 import { CodingProblemController } from './controller/coding-problem.controller';
 import { CodingProblemRepository } from './repository/coding-problem.repository';
-import { CodingProblemTestCaseRepository } from './repository/coding-problem-testcase.repository';
-import { CodingProblemExampleReposioty } from './repository/coding-problem-example.repository';
+import { CodingProblemExampleRepository } from './repository/coding-problem-example.repository';
+import { CodingProblemTemplateRepository } from './repository/coding-problem-template.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       CodingProblemRepository,
-      CodingProblemExampleReposioty,
-      CodingProblemTestCaseRepository
+      CodingProblemExampleRepository,
+      CodingProblemTemplateRepository
     ])
   ],
   controllers: [CodingProblemController],
   providers: [CodingProblemService],
+  exports: [CodingProblemService]
 })
 export class CodingProblemModule {}

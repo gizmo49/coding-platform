@@ -2,6 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsString, IsArray, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 
+
+export class CodingProblemTemplateDto {
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    language: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    template: string;
+}
+
+
 export class CodingProblemExampleDto {
 
     @ApiProperty()
@@ -30,11 +44,17 @@ export class CreateCodingProblemDto {
     @IsString()
     description: string;
 
-    @ApiProperty()
+    @ApiProperty({ isArray: true, type: CodingProblemExampleDto })
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CodingProblemExampleDto)
     examples: CodingProblemExampleDto[];
+
+    @ApiProperty({ isArray: true, type: CodingProblemTemplateDto })
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CodingProblemTemplateDto)
+    templates: CodingProblemTemplateDto[];
 
     @ApiProperty()
     @IsArray()

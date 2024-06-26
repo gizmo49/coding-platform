@@ -1,8 +1,8 @@
-import { User } from 'src/resources/user/entity/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, BaseEntity, OneToMany } from 'typeorm';
-import { CodingProblem } from '../../coding-problem/entity/coding-problem.entity';
 import { Exclude } from 'class-transformer';
+import { CodingProblem } from '../../coding-problem/entity/coding-problem.entity';
 import { TestCaseResult } from './testcase-result.entity';
+import { User } from 'src/resources/user/entity/user.entity';
 
 @Entity()
 export class CodingSolution extends BaseEntity {
@@ -14,7 +14,7 @@ export class CodingSolution extends BaseEntity {
     @Column({ type: 'varchar', nullable: false })
     language: string;
 
-    @Column({ type: 'varchar', nullable: true })
+    @Column({ type: 'text', nullable: true })
     code: string;
 
     @Column({ type: 'bool', default: false })

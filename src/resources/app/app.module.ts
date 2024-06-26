@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../user/user.module';
 import { typeOrmConfigAsync } from '../../config/database/typeorm.config';
-import { RolesGuard } from '../auth/guards/roles.guard';
 import { CodingProblemModule } from '../coding-problem/coding-problem.module';
 import { CodingSolutionModule } from '../coding-solution/coding-solution.module';
 
@@ -25,11 +23,6 @@ import { CodingSolutionModule } from '../coding-solution/coding-solution.module'
     CodingSolutionModule
   ],
   controllers: [],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: RolesGuard,
-    },
-  ],
+  providers: [],
 })
 export class AppModule { }
